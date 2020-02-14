@@ -3,6 +3,9 @@ import copy
 import glob
 import pickle
 import sys
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+sl_dir = '/'.join(cur_dir.split('/')[:-2])
+sys.path.append(sl_dir)
 
 import tensorflow as tf
 from ray import tune
@@ -15,7 +18,7 @@ from softlearning.samplers.utils import get_sampler_from_variant
 from softlearning.value_functions.utils import get_Q_function_from_variant
 
 from softlearning.misc.utils import set_seed, initialize_tf_variables
-from examples.instrument import run_example_local
+from examples.instrument import run_example_debug
 
 
 class ExperimentRunner(tune.Trainable):
@@ -219,7 +222,7 @@ def main(argv=None):
     Run 'softlearning launch_example_{gce,ec2} --help' for further
     instructions.
     """
-    run_example_local('examples.development', argv)
+    run_example_debug('examples.development', argv)
 
 
 if __name__ == '__main__':

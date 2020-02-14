@@ -48,7 +48,7 @@ ALGORITHM_PARAMS_BASE = {
         'train_every_n_steps': 1,
         'n_train_repeat': 1,
         'eval_render_mode': None,
-        'eval_n_episodes': 1,
+        'eval_n_episodes': 10,
         'eval_deterministic': True,
 
         'discount': 0.99,
@@ -70,6 +70,24 @@ ALGORITHM_PARAMS_ADDITIONAL = {
             'store_extra_policy_info': False,
             'action_prior': 'uniform',
             'n_initial_exploration_steps': int(1e3),
+            'num_q': 2,
+        }
+    },
+    'TQC': {
+        'type': 'TQC',
+        'kwargs': {
+            'reparameterize': REPARAMETERIZE,
+            'lr': 3e-4,
+            'target_update_interval': 1,
+            'tau': 5e-3,
+            'target_entropy': 'auto',
+            'store_extra_policy_info': False,
+            'action_prior': 'uniform',
+            'n_initial_exploration_steps': int(1e3),
+            'num_quantiles': 25,
+            'top_crop_quantiles': 2,
+            'num_q': 5,
+            'p_opt_crop': False,
         }
     },
     'SQL': {
@@ -103,10 +121,10 @@ DEFAULT_NUM_EPOCHS = 200
 
 NUM_EPOCHS_PER_DOMAIN = {
     'Swimmer': int(3e2),
-    'Hopper': int(1e3),
-    'HalfCheetah': int(3e3),
-    'Walker2d': int(3e3),
-    'Ant': int(3e3),
+    'Hopper': int(3e3),
+    'HalfCheetah': int(5e3),
+    'Walker2d': int(5e3),
+    'Ant': int(5e3),
     'Humanoid': int(1e4),
     'Pusher2d': int(2e3),
     'HandManipulatePen': int(1e4),
