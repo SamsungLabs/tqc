@@ -65,6 +65,23 @@ def add_command_line_args_to_variant_spec(variant_spec, command_line_args):
         ),
     })
 
+    for arg, value in command_line_args.__dict__.items():
+        if arg.startswith('alg_') and value is not None:
+            arg = arg[4:]
+            if arg == 'p_opt_crop':
+                if value.lower() == 'true':
+                    value = True
+                elif value.lower() == 'false':
+                    value = False
+                else:
+                    raise Exception(f"Wrong argument for {arg}!")
+            variant_spec['algorithm_params']['kwargs'][arg] = value
+
+    q_layers = command_line_args.__dict__['q_layers']
+    if q_layers is not None:
+        q_layers = eval(q_layers)
+        variant_spec['Q_params']['kwargs']['hidden_layer_sizes'] = q_layers
+
     variant_spec['restore'] = command_line_args.restore
 
     return variant_spec
@@ -73,7 +90,7 @@ def add_command_line_args_to_variant_spec(variant_spec, command_line_args):
 def generate_experiment_kwargs(variant_spec, command_line_args):
     # TODO(hartikainen): Allow local dir to be modified through cli args
     local_dir = os.path.join(
-        '~/ray_results',
+        command_line_args.local_dir,
         command_line_args.universe,
         command_line_args.domain,
         command_line_args.task)
@@ -220,7 +237,8 @@ def run_example_local(example_module_name, example_argv, local_mode=False):
         with_server=example_args.with_server,
         server_port=example_args.server_port,
         scheduler=None,
-        reuse_actors=True)
+        reuse_actors=True,
+        verbose=example_args.verbose)
 
 
 def run_example_debug(example_module_name, example_argv):

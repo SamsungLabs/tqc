@@ -1,0 +1,1 @@
+python examples/development/main.py --exp-name=test --algorithm=TQC --policy=gaussian --q_layers=512,512,512 --alg_num_q=5 --alg_num_quantiles=25 --cpus=1 --gpus=1 --universe=gym --task=v3 --local_dir="`pwd`/ray_results" --with-server=False $@

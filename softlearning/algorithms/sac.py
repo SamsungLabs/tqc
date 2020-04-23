@@ -32,6 +32,7 @@ class SAC(RLAlgorithm):
             pool,
             plotter=None,
 
+            num_q=2,
             lr=3e-4,
             reward_scale=1.0,
             target_entropy='auto',
@@ -74,6 +75,8 @@ class SAC(RLAlgorithm):
         self._policy = policy
 
         self._Qs = Qs
+        self.num_q = num_q
+
         self._Q_targets = tuple(tf.keras.models.clone_model(Q) for Q in Qs)
 
         self._pool = pool

@@ -12,7 +12,6 @@ def create_feedforward_Q_function(observation_shape,
     return feedforward_model(
         input_shapes,
         *args,
-        output_size=1,
         preprocessors=preprocessors,
         name=name,
         **kwargs)

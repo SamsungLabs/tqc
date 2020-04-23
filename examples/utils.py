@@ -51,6 +51,11 @@ def add_ray_init_args(parser):
         default=None,
         help=init_help_string("If provided, it will specify the root temporary"
                               " directory for the Ray process."))
+    parser.add_argument(
+        '--verbose',
+        type=int,
+        default=2,
+        help=init_help_string('Verbose level, default 2'))
 
     return parser
 
@@ -159,7 +164,12 @@ def add_ray_tune_args(parser):
 
 def get_parser(allow_policy_list=False):
     parser = argparse.ArgumentParser()
-
+    parser.add_argument(
+        '--local_dir',
+        type=str,
+        default='~/ray_results',
+        help='Folder to save results to.'
+    )
     parser.add_argument(
         '--universe',
         type=str,
@@ -221,6 +231,12 @@ def get_parser(allow_policy_list=False):
         type=int,
         default=None,
         help="Save frequency for videos.")
+
+    parser.add_argument('--alg_num_quantiles', type=int, help='Number of quantiles/atoms in Q-function.')
+    parser.add_argument('--alg_top_crop_quantiles', type=int, help='Number of quantile to truncate.')
+    parser.add_argument('--alg_num_q', type=int, help='Number of Q-functions to use.')
+    parser.add_argument('--q_layers', type=str, help='Size of Q-network layers, for example 512,512,512.')
+    parser.add_argument('--alg_p_opt_crop', type=str, help='Bool, True means to optimize policy with removed atoms, False -- with all atoms.')
 
     parser = add_ray_init_args(parser)
     parser = add_ray_tune_args(parser)
