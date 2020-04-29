@@ -1,3 +1,6 @@
+<img src="https://github.com/bayesgroup/bayesgroup.github.io/blob/master/tqc/assets/tqc/main_exps.svg">
+
+
 This repository implements continuous reinforcement learning method TQC, described in paper "Controlling Overestimation Bias with Truncated Mixture of Continuous Distributional Quantile Critics" (link).
 Source code is based on [Softlearning](https://github.com/rail-berkeley/softlearning.git), and we thank the authors for a good framework. For more exaustive Readme (for example, docker usage), please refer to the original repo. 
 
