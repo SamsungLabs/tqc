@@ -1,4 +1,4 @@
-from softlearning.models.feedforward import feedforward_model
+from softlearning.models.feedforward import feedforward_model, feedforward_model_with_last_layer
 
 
 def create_feedforward_Q_function(observation_shape,
@@ -9,7 +9,7 @@ def create_feedforward_Q_function(observation_shape,
                                   **kwargs):
     input_shapes = (observation_shape, action_shape)
     preprocessors = (observation_preprocessor, None)
-    return feedforward_model(
+    return feedforward_model_with_last_layer(
         input_shapes,
         *args,
         preprocessors=preprocessors,

@@ -4,6 +4,7 @@ from numbers import Number
 import numpy as np
 import tensorflow as tf
 import tensorflow_probability as tfp
+from tensorflow.linalg import svd
 
 from .rl_algorithm import RLAlgorithm
 
@@ -181,7 +182,7 @@ class SAC(RLAlgorithm):
             [self._next_observations_ph], next_actions)
 
         next_Qs_values = tuple(
-            Q([self._next_observations_ph, next_actions])
+            Q([self._next_observations_ph, next_actions])[0]
             for Q in self._Q_targets)
 
         min_next_Q = tf.reduce_min(next_Qs_values, axis=0)
@@ -208,9 +209,12 @@ class SAC(RLAlgorithm):
 
         assert Q_target.shape.as_list() == [None, 1]
 
-        Q_values = self._Q_values = tuple(
+        Q_outputs = tuple(
             Q([self._observations_ph, self._actions_ph])
             for Q in self._Qs)
+
+        Q_values = self._Q_values = tuple(Q_output[0] for Q_output in Q_outputs)
+        self._Q_last_layers = tuple(Q_output[1] for Q_output in Q_outputs)
 
         Q_losses = self._Q_losses = tuple(
             tf.losses.mean_squared_error(
@@ -276,7 +280,7 @@ class SAC(RLAlgorithm):
             policy_prior_log_probs = 0.0
 
         Q_log_targets = tuple(
-            Q([self._observations_ph, actions])
+            Q([self._observations_ph, actions])[0]
             for Q in self._Qs)
         min_Q_log_target = tf.reduce_min(Q_log_targets, axis=0)
 
@@ -304,11 +308,22 @@ class SAC(RLAlgorithm):
         self._training_ops.update({'policy_train_op': policy_train_op})
 
     def _init_diagnostics_ops(self):
+        effective_ranks = []
+        for ll in self._Q_last_layers:
+            s, _, _ = svd(ll)
+            t = tf.cumsum(s)
+            t = t / t[-1]
+            t = tf.cast(t > 0.99, dtype=tf.int32)
+            t = tf.reduce_sum(t)
+            t = tf.shape(s)[0] - t + 1
+            effective_ranks.append(tf.cast(t, dtype=tf.float32))
+
         diagnosables = OrderedDict((
             ('Q_value', self._Q_values),
             ('Q_loss', self._Q_losses),
             ('policy_loss', self._policy_losses),
-            ('alpha', self._alpha)
+            ('alpha', self._alpha),
+            ('srank', effective_ranks),
         ))
 
         diagnostic_metrics = OrderedDict((
